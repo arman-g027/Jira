@@ -1,49 +1,70 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { Form, Input, Button } from 'antd';
+
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../services/firebase';
+import { regexpValidation } from '../../core/utils/constants';
 
 const Login = () => {
+    const [loading, setLoading] = useState(false);
 
-    const [page, setPage] = useState(1);
-    const [resultCount, setResultCount] = useState(10);
-    const [showModal, setShowModal] = useState(false) ;
+    const [form] = Form.useForm();
 
-    useEffect(() => {
-        fetch(`https://randomuser.me/api/?page=${page}&results=10&seed=abc`)
-            .then((resp) => {
-                return resp.json();
-            }).then((data) => {
-                console.log(data);
-            })
-    }, [page]);
+    const handleLogin = async values => {
+        setLoading(true);
+        try {
+            const { email, password } = values;
+            const response = await signInWithEmailAndPassword(auth, email, password);
+            form.resetFields();
 
-    const handleChangePagination = value => {
-        setPage(value === 'next' ? page + 1 : page - 1)
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <div>
-            <button onClick={() => handleChangePagination('prev')}>
-                prev
-            </button>
+            <Form layout="vertical" form={form} onFinish={handleLogin}>
+                <Form.Item
+                    label="Email"
+                    name="email"
+                    rules={[
+                        {
+                            required: true,
+                            message: "Please input you'r email!"
+                        }
+                    ]}
+                >
+                    <Input type="email" placeholder="Email" />
+                </Form.Item>
 
-            <span>page={page}</span>
+                <Form.Item
+                    label="Password"
+                    name="password"
+                    tooltip='text'
+                    rules={[
+                        {
+                            required: true,
+                            message: "Please input you'r password!"
+                        },
+                        {
+                            pattern: regexpValidation,
+                            message: 'Wrong password'
+                        }
+                    ]}
+                >
+                    <Input.Password placeholder="Password" />
+                </Form.Item>
 
-            <button onClick={() => handleChangePagination('next')}>
-                next
-            </button>
-
-            <button onClick={() => setShowModal(!showModal)}>
-                {showModal ? 'Close Modal' : 'Open Modal'}
-            </button>
-
-            {
-                showModal && (
-                    <div>
-                        <h2>Modal</h2>
-                    </div>
-                )
-            }
-        </div >
+                <Button type="primary" htmlType="submit" loading={loading}>
+                    Sign in
+                </Button>
+            </Form>
+        </div>
     )
-};
+}
+
 
 export default Login;

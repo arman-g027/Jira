@@ -1,79 +1,100 @@
-import React from "react";
+import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../../services/firebase';
 
 import { Form, Button, Input, notification } from 'antd'
+import { auth } from '../../services/firebase';
+import { regexpValidation } from "../../core/utils/constants";
+
 import './index.css';
 
-class Register extends React.Component {
 
-    constructor() {
-        super();
-        this.state = {
-            firstName: '',
-            lastName: '',
-            email: '',
-            password: '',
-            loading: false
-        };
-    }
+const Register = () => {
+    const [loading, setLoading] = useState(false);
 
-    handleChangeInput = e => {
-        const { name, value } = e.target;
-        this.setState({
-            [name]: value
-        });
-    }
+    const [form] = Form.useForm();
 
-    handleRegister = async e => {
-        e.preventDefault();
-        this.setState({
-            loading: true
-        });
-
-        const { email, password } = this.state;
-
+    const handleRegister = async values => {
+        setLoading(true);
+        const { email, password } = values;
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
-        } catch {
-            notification.error({
-                
-            })
+            await createUserWithEmailAndPassword(auth, email, password)
+        } catch (e) {
+            console.log(e);
         } finally {
-            this.setState({
-                loading: false
-            });
+            setLoading(false);
         }
     }
 
-    render() {
-        const { loading } = this.state;
+    return (
+        <div className="auth_container">
+            <Form layout="vertical" form={form} onFinish={handleRegister}>
 
-        return (
-            <div className="auth_container">
-                    <Form layout="vertical" onSubmit={this.handleRegister}>
+                <Form.Item
+                    label='First Name'
+                    name='firis_name'
+                    rules={[
+                        {
+                            required: true,
+                            message: "Please input you'r First Name!"
+                        }
+                    ]}
+                >
+                    <Input type="text" placeholder="First Name" />
+                </Form.Item>
 
-                        <Form.Item label="First Name">
-                            <Input name="firstName" type="text" placeholder="First Name" onChange={this.handleChangeInput} />
-                        </Form.Item>
+                <Form.Item
+                    label='Last Name'
+                    name='last_name'
+                    rules={[
+                        {
+                            required: true,
+                            message: "Please input you'r Last Name!"
+                        }
+                    ]}>
+                    <Input type="text" placeholder="Last Name" />
+                </Form.Item>
 
-                        <Form.Item label='Last Name'>
-                            <Input name="lastName" type="text" placeholder="Last Name" onChange={this.handleChangeInput} />
-                        </Form.Item>
+                <Form.Item
+                    label='Email'
+                    name='email'
+                    rules={[
+                        {
+                            required: true,
+                            message: "Please input you'r email!"
+                        }
+                    ]}
+                >
+                    <Input type="email" placeholder="Email" />
+                </Form.Item>
 
-                        <Form.Item label='Email'>
-                            <Input name="email" type="email" placeholder="Email" onChange={this.handleChangeInput} />
-                        </Form.Item>
+                <Form.Item
+                    label='Password'
+                    name='password'
+                    rules={[
+                        {
+                            required: true,
+                            message: "Please input you'r password!"
+                        },
+                        {
+                            pattern: regexpValidation,
+                            message: 'Wrong password'
+                        }
+                    ]}
+                >
+                    <Input type="password" placeholder="Password" />
+                </Form.Item>
 
-                        <Form.Item label='Password'>
-                            <Input.Password name="password" type="password" placeholder="Password" onChange={this.handleChangeInput} />
-                        </Form.Item>
+                <Button type="primary" htmlType="submit" loading={loading}>
+                    Sign up
+                </Button>
 
-                        <Button onClick={this.handleRegister} type="primary" loading={loading}>Register</Button>
-                    </Form>
-            </div>
-        );
-    }
+            </Form>
+        </div>
+    )
+
+
 }
+
+
 
 export default Register;
