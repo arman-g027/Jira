@@ -1,6 +1,4 @@
-import Header from "./components/global/Header";
-import Register from "./pages/register";
-import Login from "./pages/login";
+import { Login, Register } from './pages/auth';
 import MainLayout from "./components/layouts/Main";
 import { ROUTE_CONSTANTS } from "./core/utils/constants";
 import { RouterProvider, createBrowserRouter, createRoutesFromElements, Route } from 'react-router-dom';

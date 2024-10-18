@@ -2,9 +2,12 @@ import { useState } from 'react';
 import { Form, Input, Button } from 'antd';
 
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../services/firebase';
+import { auth } from '../../../services/firebase';
 
-import { regexpValidation, ROUTE_CONSTANTS } from '../../core/utils/constants';
+import { regexpValidation, ROUTE_CONSTANTS } from '../../../core/utils/constants';
+import AuthWrapper from '../../../components/sheard/AuthWrapper';
+import loginBanner from '../../../core/images/auth-login.jpg';
+
 import { Link } from 'react-router-dom';
 
 const Login = () => {
@@ -27,7 +30,7 @@ const Login = () => {
     };
 
     return (
-        <div>
+        <AuthWrapper title='Sign in' banner={loginBanner}>
             <Form layout="vertical" form={form} onFinish={handleLogin}>
                 <Form.Item
                     label="Email"
@@ -45,15 +48,10 @@ const Login = () => {
                 <Form.Item
                     label="Password"
                     name="password"
-                    tooltip='text'
                     rules={[
                         {
                             required: true,
                             message: "Please input you'r password!"
-                        },
-                        {
-                            pattern: regexpValidation,
-                            message: 'Wrong password'
                         }
                     ]}
                 >
@@ -63,9 +61,9 @@ const Login = () => {
                 <Button type="primary" htmlType="submit" loading={loading}>
                     Sign in
                 </Button>
-                <Link to={ROUTE_CONSTANTS.REGISTER}>Sign up</Link>
+                <Link to={ROUTE_CONSTANTS.REGISTER}>Create Account</Link>
             </Form>
-        </div>
+        </AuthWrapper>
     )
 }
 

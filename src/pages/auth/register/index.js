@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
-import { Form, Button, Input, notification } from 'antd'
-import { auth } from '../../services/firebase';
+import { Form, Button, Input, Flex } from 'antd'
+import { auth } from '../../../services/firebase';
 
-import { ROUTE_CONSTANTS } from "../../core/utils/constants";
+import { regexpValidation, ROUTE_CONSTANTS } from "../../../core/utils/constants";
+import AuthWrapper from "../../../components/sheard/AuthWrapper";
 import { Link, useNavigate } from 'react-router-dom';
-
-import './index.css';
-
+import registerBanner from '../../../core/images/auth-register.jpeg';
 
 const Register = () => {
     const [loading, setLoading] = useState(false);
@@ -20,7 +19,7 @@ const Register = () => {
         const { email, password } = values;
         try {
             await createUserWithEmailAndPassword(auth, email, password);
-            navigate(ROUTE_CONSTANTS.LOGIN);    
+            navigate(ROUTE_CONSTANTS.LOGIN);
         } catch (e) {
             console.log(e);
         } finally {
@@ -29,7 +28,7 @@ const Register = () => {
     }
 
     return (
-        <div className="auth_container">
+        <AuthWrapper title='Sign up' banner={registerBanner}>
             <Form layout="vertical" form={form} onFinish={handleRegister}>
 
                 <Form.Item
@@ -64,6 +63,10 @@ const Register = () => {
                         {
                             required: true,
                             message: "Please input you'r email!"
+                        },
+                        {
+                            required: regexpValidation,
+                            message: 'Wrong password'
                         }
                     ]}
                 >
@@ -73,25 +76,57 @@ const Register = () => {
                 <Form.Item
                     label='Password'
                     name='password'
+                    tooltip='Password must be min 6 max 16 characters...'
                     rules={[
                         {
                             required: true,
                             message: "Please input you'r password!"
+                        },
+                        {
+                            required: regexpValidation,
+                            message: 'Wrong password'
                         }
                     ]}
                 >
                     <Input.Password placeholder="Password" />
                 </Form.Item>
 
-                <Button type="primary" htmlType="submit" loading={loading}>
-                    Sign up
-                </Button>
+                <Form.Item
+                    label="Config Password"
+                    name='confirm'
+                    dependencies={['password']}
+                    rules={[
+                        {
+                            required: true,
+                            message: "Please input you'r password!"
+                        },
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+                                if (!value || getFieldValue('password') === value) {
+                                    return Promise.resolve();
+                                }
 
-                <Link to={ROUTE_CONSTANTS.LOGIN}>Sign in</Link>
+                                return Promise.reject(new Error('The new password that you entered do not match!!!'));
+                            }
+                        })
+                    ]}
+                >
+                    <Input.Password placeholder="Config Password" />
+                </Form.Item>
 
+
+                <Flex justify="flex-end" align="center" gap='12px'>
+                    <Link to={ROUTE_CONSTANTS.LOGIN}>Sign in</Link>
+
+                    <Button type="primary" htmlType="submit" loading={loading}>
+                        Sign up
+                    </Button>
+
+
+                </Flex>
 
             </Form>
-        </div>
+        </AuthWrapper>
     )
 
 
