@@ -5,7 +5,7 @@ const Header = () => {
     return (
         <div className='main_header'> 
             <Flex justify='space-between' align='center'>
-                <p>left</p>
+                <p>Logo</p>
                 <div>
                     <Button>
                         Sign in
