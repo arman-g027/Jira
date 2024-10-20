@@ -7,6 +7,7 @@ import Cabinet from './pages/cabinet';
 import { ROUTE_CONSTANTS } from './core/utils/constants';
 import { auth } from './services/firbase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { AuthContext } from './context/authContext'
 
 
 import './styles/global.css';
@@ -26,21 +27,23 @@ const App = () => {
   }, []);
 
   return (
-    <LoadingWrapper loading={loading}>
-      <RouterProvider
-        router={
-          createBrowserRouter(
-            createRoutesFromElements(
-              <Route path="/" element={<MainLayout />}>
-                <Route path={ROUTE_CONSTANTS.LOGIN} element={isAuth ? <Navigate to={ROUTE_CONSTANTS.CABINET} /> : <Login setIsAuth={setIsAuth} />} />
-                <Route path={ROUTE_CONSTANTS.REGISTER} element={isAuth ? <Navigate to={ROUTE_CONSTANTS.CABINET} /> : <Register />} />
-                <Route path={ROUTE_CONSTANTS.CABINET} element={isAuth ? <Cabinet /> : <Navigate to={ROUTE_CONSTANTS.LOGIN} />} />
-              </Route>
+    <AuthContext.Provider value={{ isAuth, x: 10 }}>
+      <LoadingWrapper loading={loading}>
+        <RouterProvider
+          router={
+            createBrowserRouter(
+              createRoutesFromElements(
+                <Route path="/" element={<MainLayout />}>
+                  <Route path={ROUTE_CONSTANTS.LOGIN} element={isAuth ? <Navigate to={ROUTE_CONSTANTS.CABINET} /> : <Login setIsAuth={setIsAuth} />} />
+                  <Route path={ROUTE_CONSTANTS.REGISTER} element={isAuth ? <Navigate to={ROUTE_CONSTANTS.CABINET} /> : <Register />} />
+                  <Route path={ROUTE_CONSTANTS.CABINET} element={isAuth ? <Cabinet /> : <Navigate to={ROUTE_CONSTANTS.LOGIN} />} />
+                </Route>
+              )
             )
-          )
-        }
-      />
-    </LoadingWrapper>
+          }
+        />
+      </LoadingWrapper>
+    </AuthContext.Provider>
   )
 };
 
