@@ -1,4 +1,8 @@
 import { Avatar, Dropdown, Typography, Flex, theme } from "antd";
+import { signOut } from "firebase/auth";
+import { auth } from '../../../services/firbase';
+import { ROUTE_CONSTANTS } from "../../../core/utils/constants";
+import { useNavigate } from "react-router-dom";
 
 import './index.css';
 
@@ -6,21 +10,32 @@ const { useToken } = theme;
 const { Text } = Typography;
 
 const AuthProfileDropDown = () => {
-
+    const navigate = useNavigate();
     const { token } = useToken();
+    const handleSignOut = async () => {
+        try {
+            await signOut(auth);
+        } catch (e) {
+            console.lolg(e, 'signOut Error');
+        }
+    }
+
 
     const items = [
         {
             label: 'Profile',
-            key: '0'
+            key: '0',
+            onClick: () => navigate(ROUTE_CONSTANTS.PROFILE),
         },
         {
             label: 'Cabinet',
-            key: '1'
+            key: '1',
+            onClick: () => navigate(ROUTE_CONSTANTS.CABINET),
         },
         {
             label: 'Logout',
-            key: '2'
+            key: 'logout',
+            onClick: handleSignOut,
         },
     ];
 

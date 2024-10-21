@@ -1,23 +1,32 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { Form, Button, Input, Flex } from 'antd';
-import { auth } from '../../../services/firbase';
+import { auth, db } from '../../../services/firbase';
 import { regexpValidation, ROUTE_CONSTANTS } from '../../../core/utils/constants';
+import { setDoc, doc } from 'firebase/firestore';
 import AuthWrapper from '../../../components/sheard/AuthWrapper';
 import { Link, useNavigate } from 'react-router-dom';
 import registerBanner from '../../../core/images/auth-register2.jpg';
+
 const Register = () => {
   const [loading, setLoading] = useState(false);
-  const [form] =  Form.useForm();
+  const [form] = Form.useForm();
   const navigate = useNavigate();
 
-  const handleRegister =  async values => {
+  const handleRegister = async values => {
     setLoading(true);
-    const { email, password } = values;
+    const { firstName, lastName, email, password } = values;
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const response = await createUserWithEmailAndPassword(auth, email, password);
+      console.log(response, 'response');
+      const { uid } = response.user;
+      const createdDoc = doc(db, 'registeredUsers', uid);
+      await setDoc(createdDoc, {
+        firstName, lastName, email  
+      });
+
       navigate(ROUTE_CONSTANTS.LOGIN);
-    }catch (e) {
+    } catch (e) {
       console.log(e);
     } finally {
       setLoading(false)
@@ -37,7 +46,7 @@ const Register = () => {
             }
           ]}
         >
-          <Input type="text" placeholder="First Name"/>
+          <Input type="text" placeholder="First Name" />
         </Form.Item>
 
         <Form.Item
@@ -50,7 +59,7 @@ const Register = () => {
             }
           ]}
         >
-          <Input type="text" placeholder="Last Name"/>
+          <Input type="text" placeholder="Last Name" />
         </Form.Item>
 
         <Form.Item
@@ -63,7 +72,7 @@ const Register = () => {
             }
           ]}
         >
-          <Input type="email" placeholder="Email"/>
+          <Input type="email" placeholder="Email" />
         </Form.Item>
 
         <Form.Item
@@ -81,7 +90,7 @@ const Register = () => {
             }
           ]}
         >
-          <Input.Password placeholder="Password"/>
+          <Input.Password placeholder="Password" />
         </Form.Item>
 
         <Form.Item
@@ -95,7 +104,7 @@ const Register = () => {
             },
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if(!value || getFieldValue('password') === value) {
+                if (!value || getFieldValue('password') === value) {
                   return Promise.resolve();
                 }
 
@@ -104,7 +113,7 @@ const Register = () => {
             })
           ]}
         >
-          <Input.Password placeholder="Config Password"/>
+          <Input.Password placeholder="Config Password" />
         </Form.Item>
 
         <Flex align="flex-end" gap="10px" justify="flex-end">
