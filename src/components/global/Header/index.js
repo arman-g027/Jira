@@ -8,7 +8,7 @@ import './index.css';
 
 const Header = () => {
 
-  const { isAuth } = useContext(AuthContext);
+  const { isAuth, userProfileInfo } = useContext(AuthContext);
 
 
   return (
@@ -19,7 +19,7 @@ const Header = () => {
         <div>
 
           {
-            isAuth ? <AuthProfileDropDown /> : <Link to={ROUTE_CONSTANTS.LOGIN}><Button>Sign in</Button></Link>
+            isAuth ? <AuthProfileDropDown userProfileInfo={userProfileInfo} /> : <Link to={ROUTE_CONSTANTS.LOGIN}><Button>Sign in</Button></Link>
           }
 
         </div>

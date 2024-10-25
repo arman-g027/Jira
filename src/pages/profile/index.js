@@ -1,3 +1,5 @@
+import { Upload,  } from 'antd';
+
 import './index.css';
 
 const Profile = () => {
